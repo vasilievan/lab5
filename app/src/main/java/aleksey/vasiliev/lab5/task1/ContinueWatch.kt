@@ -13,13 +13,16 @@ class ContinueWatch : AppCompatActivity() {
 
     private fun getBackgroundThread(): Thread {
         return Thread {
-            while (true) {
-                Thread.sleep(1000)
-                textSecondsElapsed?.post {
-                    secondsElapsed++
-                    val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
-                    textSecondsElapsed?.text = secondsElapsedString
+            try {
+                while (true) {
+                    Thread.sleep(1000)
+                    textSecondsElapsed?.post {
+                        secondsElapsed++
+                        val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
+                        textSecondsElapsed?.text = secondsElapsedString
+                    }
                 }
+            } catch (e: InterruptedException) {
             }
         }
     }
