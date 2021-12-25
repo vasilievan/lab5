@@ -4,10 +4,7 @@ import aleksey.vasiliev.lab5.R
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class ContinueWatch3 : AppCompatActivity() {
     private var textSecondsElapsed: TextView? = null
@@ -71,5 +68,10 @@ class ContinueWatch3 : AppCompatActivity() {
         textSecondsElapsed = null
         stopCount()
         super.onPause()
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
     }
 }
