@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 class ContinueWatch : AppCompatActivity() {
     private var textSecondsElapsed: TextView? = null
     private var backgroundThread: Thread? = null
+    @Volatile
     private var secondsElapsed: Int = 0
 
     private fun getBackgroundThread(): Thread {

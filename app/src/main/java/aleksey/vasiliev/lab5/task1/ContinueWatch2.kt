@@ -6,19 +6,26 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class ContinueWatch2 : AppCompatActivity() {
-    private var textSecondsElapsed: TextView? = null
+    @Volatile
     private var secondsElapsed: Int = 0
-    private var executorService: ExecutorService? = null
+    private val executorService: ExecutorService = Executors.newSingleThreadExecutor{ runnable ->
+        val thread = Thread(runnable)
+        thread.isDaemon = true
+        thread
+    }
+    private var future: Future<*>? = null
+    private lateinit var textSecondsElapsed: TextView
 
     private fun getBackgroundRunnable() {
         while (true) {
             Thread.sleep(1000)
-            textSecondsElapsed?.post {
-                secondsElapsed++
-                val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
-                textSecondsElapsed?.text = secondsElapsedString
+            secondsElapsed++
+            val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
+            runOnUiThread {
+                textSecondsElapsed.text = secondsElapsedString
             }
         }
     }
@@ -33,6 +40,7 @@ class ContinueWatch2 : AppCompatActivity() {
         }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -45,19 +53,16 @@ class ContinueWatch2 : AppCompatActivity() {
         savedInstanceState.getInt("seconds_elapsed")
     }
 
-    override fun onResume() {
-        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
-        executorService = Executors.newFixedThreadPool(1)
-        executorService?.submit {
+    override fun onStart() {
+       future = executorService.submit {
             getBackgroundRunnable()
         }
-        super.onResume()
+        super.onStart()
     }
 
-    override fun onPause() {
-        textSecondsElapsed = null
-        executorService?.shutdown()
-        executorService = null
-        super.onPause()
+    override fun onStop() {
+        future?.cancel(true)
+        future = null
+        super.onStop()
     }
 }

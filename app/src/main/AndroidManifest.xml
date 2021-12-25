@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Lab5">
         <activity
-            android:name=".task3.ImageLoading2"
+            android:name=".task1.ContinueWatch2"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">lab5</string>
     <string name="image">image</string>
+    <string name="uri">https://cdnimg.rg.ru/img/content/161/31/13/kinopoisk.ru-Shrek-13985_d_850.jpg</string>
 </resources>

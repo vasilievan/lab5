@@ -14,6 +14,7 @@ import java.util.concurrent.Executors
 
 class ContinueWatch3 : AppCompatActivity() {
     private var textSecondsElapsed: TextView? = null
+    @Volatile
     private var secondsElapsed: Int = 0
     private var job: Job? = null
     private val scope = MainScope()

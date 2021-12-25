@@ -14,7 +14,7 @@ class ImageLoading3 : AppCompatActivity() {
         Fresco.initialize(this)
         setContentView(R.layout.activity_main3)
         val imageUri: Uri =
-            Uri.parse("https://cdnimg.rg.ru/img/content/161/31/13/kinopoisk.ru-Shrek-13985_d_850.jpg")
+            Uri.parse(resources.getString(R.string.uri))
         val image = findViewById<ImageView>(R.id.image_fresco)
         image.setImageURI(imageUri)
     }
