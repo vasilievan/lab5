@@ -16,8 +16,9 @@ class ContinueWatch2 : AppCompatActivity() {
         thread.isDaemon = true
         thread
     }
-    private var future: Future<*>? = null
+    private lateinit var future: Future<*>
     private lateinit var textSecondsElapsed: TextView
+    private val secondsElapsedKey: String = "seconds_elapsed"
 
     private fun getBackgroundRunnable() {
         while (true) {
@@ -33,24 +34,24 @@ class ContinueWatch2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             with(savedInstanceState) {
-                secondsElapsed = getInt("seconds_elapsed")
+                secondsElapsed = getInt(secondsElapsedKey)
             }
         } else {
             secondsElapsed = 0
         }
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt("seconds_elapsed", secondsElapsed)
+        outState.putInt(secondsElapsedKey, secondsElapsed)
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        secondsElapsed = savedInstanceState.getInt(secondsElapsedKey)
         super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState.getInt("seconds_elapsed")
     }
 
     override fun onStart() {
@@ -61,8 +62,7 @@ class ContinueWatch2 : AppCompatActivity() {
     }
 
     override fun onStop() {
-        future?.cancel(true)
-        future = null
+        future.cancel(true)
         super.onStop()
     }
 }

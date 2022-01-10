@@ -4,26 +4,29 @@ import aleksey.vasiliev.lab5.R
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.coroutines.*
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ContinueWatch3 : AppCompatActivity() {
-    private var textSecondsElapsed: TextView? = null
+    private lateinit var textSecondsElapsed: TextView
     @Volatile
     private var secondsElapsed: Int = 0
-    private var job: Job? = null
-    private val scope = MainScope()
+    private lateinit var job: Job
+    private val secondsElapsedKey: String = "seconds_elapsed"
 
     private fun doCount() {
-        textSecondsElapsed?.post {
+        textSecondsElapsed.post {
             secondsElapsed++
             val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
-            textSecondsElapsed?.text = secondsElapsedString
+            textSecondsElapsed.text = secondsElapsedString
         }
     }
 
     private fun startCount() {
         stopCount()
-        job = scope.launch {
+        job = this.lifecycleScope.launch {
             while(true) {
                 delay(1000)
                 doCount()
@@ -32,46 +35,39 @@ class ContinueWatch3 : AppCompatActivity() {
     }
 
     private fun stopCount() {
-        job?.cancel()
-        job = null
+        if (this::job.isInitialized) job.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             with(savedInstanceState) {
-                secondsElapsed = getInt("seconds_elapsed")
+                secondsElapsed = getInt(secondsElapsedKey)
             }
         } else {
             secondsElapsed = 0
         }
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt("seconds_elapsed", secondsElapsed)
+        outState.putInt(secondsElapsedKey, secondsElapsed)
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        secondsElapsed = savedInstanceState.getInt(secondsElapsedKey)
         super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState.getInt("seconds_elapsed")
     }
 
     override fun onResume() {
-        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
         startCount()
         super.onResume()
     }
 
     override fun onPause() {
-        textSecondsElapsed = null
         stopCount()
         super.onPause()
-    }
-
-    override fun onDestroy() {
-        scope.cancel()
-        super.onDestroy()
     }
 }

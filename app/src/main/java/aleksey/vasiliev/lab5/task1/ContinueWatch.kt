@@ -6,20 +6,21 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
 class ContinueWatch : AppCompatActivity() {
-    private var textSecondsElapsed: TextView? = null
-    private var backgroundThread: Thread? = null
+    private lateinit var textSecondsElapsed: TextView
+    private lateinit var backgroundThread: Thread
     @Volatile
     private var secondsElapsed: Int = 0
+    private val secondsElapsedKey: String = "seconds_elapsed"
 
     private fun getBackgroundThread(): Thread {
         return Thread {
             try {
                 while (true) {
                     Thread.sleep(1000)
-                    textSecondsElapsed?.post {
+                    textSecondsElapsed.post {
                         secondsElapsed++
                         val secondsElapsedString = "Seconds elapsed: $secondsElapsed"
-                        textSecondsElapsed?.text = secondsElapsedString
+                        textSecondsElapsed.text = secondsElapsedString
                     }
                 }
             } catch (e: InterruptedException) {
@@ -30,36 +31,34 @@ class ContinueWatch : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             with(savedInstanceState) {
-                secondsElapsed = getInt("seconds_elapsed")
+                secondsElapsed = getInt(secondsElapsedKey)
             }
         } else {
             secondsElapsed = 0
         }
-        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+        super.onCreate(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putInt("seconds_elapsed", secondsElapsed)
+        outState.putInt(secondsElapsedKey, secondsElapsed)
         super.onSaveInstanceState(outState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        secondsElapsed = savedInstanceState.getInt(secondsElapsedKey)
         super.onRestoreInstanceState(savedInstanceState)
-        savedInstanceState.getInt("seconds_elapsed")
     }
 
     override fun onResume() {
-        textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
         backgroundThread = getBackgroundThread()
-        backgroundThread!!.start()
+        backgroundThread.start()
         super.onResume()
     }
 
     override fun onPause() {
-        textSecondsElapsed = null
-        backgroundThread!!.interrupt()
-        backgroundThread = null
+        backgroundThread.interrupt()
         super.onPause()
     }
 }
