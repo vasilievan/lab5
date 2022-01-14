@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 class ContinueWatch : AppCompatActivity() {
     private lateinit var textSecondsElapsed: TextView
     private lateinit var backgroundThread: Thread
-    @Volatile
     private var secondsElapsed: Int = 0
     private val secondsElapsedKey: String = "seconds_elapsed"
 
@@ -58,7 +57,10 @@ class ContinueWatch : AppCompatActivity() {
     }
 
     override fun onPause() {
-        backgroundThread.interrupt()
+        try {
+            backgroundThread.interrupt()
+        } catch (e: InterruptedException) {
+        }
         super.onPause()
     }
 }

@@ -2,15 +2,14 @@ package aleksey.vasiliev.lab5
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URL
-import java.util.concurrent.Executors
 
-class ImageLoadingViewModel: ViewModel() {
+class ImageLoadingViewModel(private val application: ImageLoadingApplication): AndroidViewModel(application) {
     val currentResource: MutableLiveData<Bitmap> by lazy {
         MutableLiveData<Bitmap>()
     }
@@ -34,12 +33,7 @@ class ImageLoadingViewModel: ViewModel() {
     }
 
     fun loadImageExecutors(uri: String) {
-        val executorService = Executors.newSingleThreadExecutor { runnable ->
-            val thread = Thread(runnable)
-            thread.isDaemon = true
-            thread
-        }
-        executorService.submit {
+        application.executorService.submit {
             val bm = downloadImage(uri)
             setCurrentResource(bm)
         }

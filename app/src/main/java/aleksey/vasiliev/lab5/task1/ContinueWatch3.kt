@@ -5,15 +5,11 @@ import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class ContinueWatch3 : AppCompatActivity() {
     private lateinit var textSecondsElapsed: TextView
-    @Volatile
     private var secondsElapsed: Int = 0
-    private lateinit var job: Job
     private val secondsElapsedKey: String = "seconds_elapsed"
 
     private fun doCount() {
@@ -25,17 +21,12 @@ class ContinueWatch3 : AppCompatActivity() {
     }
 
     private fun startCount() {
-        stopCount()
-        job = this.lifecycleScope.launch {
+        this.lifecycleScope.launchWhenStarted {
             while(true) {
                 delay(1000)
                 doCount()
             }
         }
-    }
-
-    private fun stopCount() {
-        if (this::job.isInitialized) job.cancel()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +39,7 @@ class ContinueWatch3 : AppCompatActivity() {
         }
         setContentView(R.layout.activity_main)
         textSecondsElapsed = findViewById(R.id.textSecondsElapsed)
+        startCount()
         super.onCreate(savedInstanceState)
     }
 
@@ -59,15 +51,5 @@ class ContinueWatch3 : AppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         secondsElapsed = savedInstanceState.getInt(secondsElapsedKey)
         super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onResume() {
-        startCount()
-        super.onResume()
-    }
-
-    override fun onPause() {
-        stopCount()
-        super.onPause()
     }
 }

@@ -1,21 +1,14 @@
 package aleksey.vasiliev.lab5.task1
 
+import aleksey.vasiliev.lab5.ContinueWatchApplication
 import aleksey.vasiliev.lab5.R
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import java.util.concurrent.Future
 
 class ContinueWatch2 : AppCompatActivity() {
-    @Volatile
     private var secondsElapsed: Int = 0
-    private val executorService: ExecutorService = Executors.newSingleThreadExecutor{ runnable ->
-        val thread = Thread(runnable)
-        thread.isDaemon = true
-        thread
-    }
     private lateinit var future: Future<*>
     private lateinit var textSecondsElapsed: TextView
     private val secondsElapsedKey: String = "seconds_elapsed"
@@ -55,7 +48,7 @@ class ContinueWatch2 : AppCompatActivity() {
     }
 
     override fun onStart() {
-       future = executorService.submit {
+       future = (application as ContinueWatchApplication).executorService.submit {
             getBackgroundRunnable()
         }
         super.onStart()
